@@ -112,6 +112,7 @@ $last_modified = 0;
 $pre_output = '';
 $output = '';
 
+
 foreach ( $args as $uri ) {
 	$fullpath = concat_get_path( $uri );
 
@@ -197,10 +198,13 @@ foreach ( $args as $uri ) {
 		}
 	}
 
+	$output .= "\n/* uri: {$uri} */\n";
+
 	if ( 'application/x-javascript' == $mime_type )
 		$output .= "$buf;\n";
 	else
 		$output .= "$buf";
+
 }
 
 header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s', $last_modified ) . ' GMT' );

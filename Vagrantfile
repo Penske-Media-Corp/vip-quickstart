@@ -19,13 +19,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Virtualbox overrides
   config.vm.provider "virtualbox" do |v|
     # Use 1GB of memory
-    v.memory = 1024
+    v.memory = 4048
   end
 
   # VMWare Fusion overrides
   config.vm.provider "vmware_fusion" do |v|
     # Use 1GB of memory in vmware_fusion
-    v.memory = 1024
+    v.memory = 4048
 
     v.vm.box = "precise64-vmware"
     v.vm.box_url = "http://files.vagrantup.com/precise64_vmware.box"

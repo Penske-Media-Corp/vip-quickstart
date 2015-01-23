@@ -59,16 +59,15 @@ class WPcom_JS_Concat extends WP_scripts {
 				$do_concat = true;
 
 			// Don't try to concat externally hosted scripts
-			if ( ( isset( $js_url['host'] ) && ( preg_replace( '/https?:\/\//', '', $siteurl ) != $js_url['host'] ) ) )
-				$do_concat = false;
+//			if ( ( isset( $js_url['host'] ) && ( preg_replace( '/https?:\/\//', '', $siteurl ) != $js_url['host'] ) ) )
+//				$do_concat = false;
 
 			// Concat and canonicalize the paths only for
 			// existing scripts that aren't outside ABSPATH
 			$js_realpath = realpath( ABSPATH . $js_url['path'] );
-			if ( ! $js_realpath || 0 !== strpos( $js_realpath, ABSPATH ) )
+			if ( ! $js_realpath ) {
 				$do_concat = false;
-			else
-				$js_url['path'] = substr( $js_realpath, strlen( ABSPATH ) - 1 );
+			}
 
 			if ( true === $do_concat ) {
 				if ( !isset( $javascripts[$level] ) )
