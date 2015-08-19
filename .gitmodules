@@ -6,25 +6,25 @@
 	url = https://github.com/example42/puppi.git
 [submodule "puppet/modules/php"]
 	path = puppet/modules/php
-	url = https://github.com/nodesagency/puppet-php.git
+	url = https://github.com/jippi/puppet-php.git
 [submodule "puppet/modules/mysql"]
 	path = puppet/modules/mysql
 	url = https://github.com/example42/puppet-mysql.git
 [submodule "puppet/modules/nginx"]
 	path = puppet/modules/nginx
-	url = https://github.com/example42/puppet-nginx.git
+	url = https://github.com/netmanagers/puppet-nginx.git
 [submodule "puppet/modules/wp"]
 	path = puppet/modules/wp
 	url = https://github.com/joshbetz/puppet-wp.git
 [submodule "puppet/modules/ufw"]
 	path = puppet/modules/ufw
-	url = https://github.com/anl/puppet-ufw
+	url = https://github.com/anl/puppet-ufw.git
 [submodule "puppet/modules/vcsrepo"]
 	path = puppet/modules/vcsrepo
 	url = https://github.com/puppetlabs/puppetlabs-vcsrepo.git
 [submodule "puppet/modules/apt"]
 	path = puppet/modules/apt
-	url = https://github.com/puppetlabs/puppetlabs-apt
+	url = https://github.com/puppetlabs/puppetlabs-apt.git
 [submodule "puppet/modules/ssh"]
 	path = puppet/modules/ssh
-	url = https://github.com/attachmentgenie/puppet-module-ssh.git
+	url = https://github.com/attachmentgenie/attachmentgenie-ssh.git

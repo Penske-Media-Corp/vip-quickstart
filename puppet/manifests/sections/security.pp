@@ -1,4 +1,4 @@
-if 'virtualbox' != $virtual {
+if 'physical' == $virtual {
     # SSH
     include ssh::server
 
@@ -7,6 +7,10 @@ if 'virtualbox' != $virtual {
     ufw::limit { 22: }
     ufw::allow { 'allow-all-http':
         port => 80,
+        ip   => 'any',
+    }
+    ufw::allow { 'allow-all-https':
+        port => 443,
         ip   => 'any',
     }
     ufw::allow { 'allow-dns-over-udp':

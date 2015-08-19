@@ -13,19 +13,15 @@ class updates {
         command => 'apt-get update --quiet --yes',
         timeout => 0
     }
+}
 
-    if 'virtualbox' != $virtual {
-        exec { 'apt-get upgrade':
-            command => 'apt-get upgrade --quiet --yes',
-            timeout => 0
-        }
+if 'physical' == $::virtual {
+    exec { 'apt-get upgrade':
+        command => 'apt-get upgrade --quiet --yes',
+        timeout => 0
     }
 }
 
-user { 'vagrant':
-    ensure => 'present',
-    system => true,
-    shell  => '/bin/bash',
-    home   => '/home/vagrant',
-    notify => Service['php5-fpm'],
+user { ['vagrant', 'ubuntu']:
+    groups => 'www-data',
 }

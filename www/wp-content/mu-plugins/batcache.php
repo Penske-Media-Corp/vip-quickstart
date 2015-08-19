@@ -9,13 +9,14 @@ Version: 1.2
 */
 
 // Do not load if our advanced-cache.php isn't loaded
-if ( ! is_object($batcache) || ! method_exists( $wp_object_cache, 'incr' ) )
+if ( ! isset( $batcache ) || ! is_object( $batcache ) || ! method_exists( $wp_object_cache, 'incr' ) ) {
 	return;
+}
 
 $batcache->configure_groups();
 
 // Regen home and permalink on posts and pages
-add_action('clean_post_cache', 'batcache_post');
+#add_action('clean_post_cache', 'batcache_post');
 
 // Regen permalink on comments (TODO)
 //add_action('comment_post',          'batcache_comment');

@@ -1,14 +1,7 @@
 $plugins = [
-  'debug-bar',
-  'debug-bar-console',
-  'debug-bar-cron',
-  'debug-bar-extender',
-  'debug-bar-slow-actions',
-  'debug-bar-query-count-alert',
-  'debug-bar-remote-requests',
   'log-deprecated-notices',
-  'log-viewer',
   'monster-widget',
+  'query-monitor',
   'user-switching',
   'wordpress-importer',
 
@@ -28,15 +21,24 @@ $github_plugins = {
     'writing-helper' => 'https://github.com/automattic/writing-helper',
 }
 
+include database::settings
+
+# Delete broken plugins
+file { '/srv/www/wp-content/plugins/log-viewer':
+  ensure => 'absent',
+  force  => true,
+  before => Wp::Site['/srv/www/wp'],
+}
+
 # Install WordPress
-exec { 'wp install /srv/www/wp':
-  command => "/usr/bin/wp core multisite-install --url='${quickstart_domain}' --title='${quickstart_domain}' --admin_email='wordpress@${quickstart_domain}' --admin_name='wordpress' --admin_password='wordpress'",
-  cwd     => '/srv/www/wp',
-  unless  => "test -z ${quickstart_domain}",
-  user    => 'vagrant',
-  require => [
+wp::site { '/srv/www/wp':
+  url             => $quickstart_domain,
+  sitename        => $quickstart_domain,
+  admin_user      => 'wordpress',
+  admin_password => 'wordpress',
+  network         => true,
+  require         => [
     Vcsrepo['/srv/www/wp'],
-    Class['wp::cli'],
     Line['path:/srv/www/wp'],
   ]
 }
@@ -52,7 +54,7 @@ wp::plugin { $plugins:
   location    => '/srv/www/wp',
   networkwide => true,
   require     => [
-    Exec['wp install /srv/www/wp'],
+    Wp::Site['/srv/www/wp'],
     File['/srv/www/wp-content/plugins'],
     Gitplugin[ $github_plugin_keys ],
   ]
@@ -62,17 +64,34 @@ wp::plugin { $plugins:
 wp::command { 'plugin update --all':
   command  => 'plugin update --all',
   location => '/srv/www/wp',
-  require  => Exec['wp install /srv/www/wp'],
+  require  => Wp::Site['/srv/www/wp'],
+}
+
+# Symlink db.php for Query Monitor
+file { '/srv/www/wp-content/db.php':
+  ensure  => 'link',
+  target  => 'plugins/query-monitor/wp-content/db.php',
+  require => Wp::Plugin['query-monitor']
 }
 
 # Install WP-CLI
 class { 'wp::cli': ensure  => installed }
 
-# Make sure the themes directory exists
-file { '/srv/www/wp-content/themes': ensure => 'directory' }
+# Make sure the wp-content directories exists
+$wp_content_dirs = [
+  '/srv/www/wp-content/themes',
+  '/srv/www/wp-content/plugins',
+  '/srv/www/wp-content/upgrade',
+  '/srv/www/wp-content/uploads',
+]
 
-# Make sure the plugins directory exists
-file { '/srv/www/wp-content/plugins': ensure => 'directory' }
+file { $wp_content_dirs:
+    ensure  => directory,
+    recurse => true,
+    mode    => 0664,
+    owner   => 'www-data',
+    group   => 'www-data',
+}
 
 # VCS Checkout
 vcsrepo { '/srv/www/wp':
@@ -81,12 +100,10 @@ vcsrepo { '/srv/www/wp':
   provider => svn,
 }
 
-# cron job to run every hour
 cron { '/srv/www/wp':
   command => '/usr/bin/svn up /srv/www/wp > /dev/null 2>&1',
   minute  => '0',
   hour    => '*',
-  user    => 'vagrant',
 }
 
 vcsrepo { '/srv/www/wp-content/themes/vip/plugins':
@@ -95,17 +112,15 @@ vcsrepo { '/srv/www/wp-content/themes/vip/plugins':
   provider => svn,
 }
 
-# cron job to run every hour
 cron { '/srv/www/wp-content/themes/vip/plugins':
   command => '/usr/bin/svn up /srv/www/wp-content/themes/vip/plugins > /dev/null 2>&1',
   minute  => '0',
   hour    => '*',
-  user    => 'vagrant',
 }
 
-vcsrepo { '/srv/www/wp-content/themes/pub/twentyfourteen':
+vcsrepo { '/srv/www/wp-content/themes/pub/twentyfifteen':
   ensure   => latest,
-  source   => 'https://wpcom-themes.svn.automattic.com/twentyfourteen',
+  source   => 'https://wpcom-themes.svn.automattic.com/twentyfifteen',
   provider => svn,
 }
 
@@ -115,11 +130,40 @@ vcsrepo { '/srv/www/wp-tests':
   provider => svn,
 }
 
-# Create a local config
-file { 'local-config.php':
-  ensure => present,
-  path   => '/srv/www/local-config.php',
-  notify => Exec['generate salts']
+cron { '/srv/www/wp-tests':
+  command => '/usr/bin/svn up /srv/www/wp-tests > /dev/null 2>&1',
+  minute  => '0',
+  hour    => '*',
+}
+
+if 'physical' == $::virtual {
+  # Create a local config
+  file { 'local-config.php':
+    ensure => present,
+    path   => '/srv/www/local-config.php',
+    notify => Exec['SUBDOMAIN_INSTALL'],
+  }
+
+  exec { 'SUBDOMAIN_INSTALL':
+    command     => 'echo "define(\'SUBDOMAIN_INSTALL\', true);" >> /srv/www/local-config.php',
+    unless      => 'grep "SUBDOMAIN_INSTALL /srv/www/local-config.php',
+    refreshonly => true,
+    require     => Exec['local config header'],
+  }
+} else {
+  # Create a local config
+  file { 'local-config.php':
+    ensure => present,
+    path   => '/srv/www/local-config.php',
+  }
+}
+
+$jetpack_dev_debug = $::virtual != 'physical'
+file_line { 'JETPACK_DEV_DEBUG':
+  line    => "define('JETPACK_DEV_DEBUG', ${jetpack_dev_debug});",
+  path    => '/srv/www/local-config.php',
+  match   => 'JETPACK_DEV_DEBUG',
+  require => File['local-config.php'],
 }
 
 # Add default path to local WP-CLI config
@@ -136,7 +180,28 @@ if ( $quickstart_domain ) {
   }
 }
 
+exec { 'local config header':
+  command => 'printf "<?php\n" > /srv/www/local-config.php;',
+  unless  => 'grep "<?php" /srv/www/local-config.php',
+  require => File['local-config.php'],
+}
+
 exec { 'generate salts':
-  command     => 'printf "<?php\n" > /srv/www/local-config.php; curl https://api.wordpress.org/secret-key/1.1/salt/ >> /srv/www/local-config.php',
-  refreshonly => true
+  command => 'curl https://api.wordpress.org/secret-key/1.1/salt/ >> /srv/www/local-config.php',
+  unless  => 'grep "AUTH_KEY" /srv/www/local-config.php',
+  require => [
+    File['local-config.php'],
+    Exec['local config header'],
+  ]
+}
+
+# Add MySQL password created in database.pp to local config
+file_line { 'Add DB_PASSWORD to local-config.php':
+  line    => "define(\'DB_PASSWORD\', \'${database::settings::mysql_password}\');",
+  path    => '/srv/www/local-config.php',
+  match   => 'DB_PASSWORD',
+  require => [
+    File['local-config.php'],
+    Exec['local config header'],
+  ]
 }

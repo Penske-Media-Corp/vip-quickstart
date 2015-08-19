@@ -24,8 +24,6 @@ class {
   'php::phpunit':;
 
   # Extensions
-  'php::extension::apc':
-    ensure => absent;
   'php::extension::curl':;
   'php::extension::gd':;
   'php::extension::imagick':;
@@ -33,8 +31,15 @@ class {
   'php::extension::memcache':;
   'php::extension::mysql':;
   'php::extension::xdebug':
-    inifile => false;
+    settings => [
+        'set .anon/xdebug.idekey QUICKSTART',
+        'set .anon/xdebug.remote_enable 1',
+        'set .anon/xdebug.remote_connect_back 1',
+        'set .anon/profiler_enable_trigger 1',
+    ];
 }
+
+php::fpm::pool { 'www': user => 'www-data' }
 
 # Install PHP_CodeSniffer and the WordPress coding standard
 package { 'pear.php.net/PHP_CodeSniffer':
@@ -43,15 +48,11 @@ package { 'pear.php.net/PHP_CodeSniffer':
 }
 
 vcsrepo { '/usr/share/php/PHP/CodeSniffer/Standards/WordPress':
+  ensure   => 'present',
   source   => 'https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards',
   provider => 'git',
-  ensure   => 'present',
   require  => Package['pear.php.net/PHP_CodeSniffer'],
 }
-
-php::fpm::conf { 'www': user => 'vagrant' }
-
-file { '/etc/php5/conf.d/apc.ini': ensure => absent }
 
 # Turn on html_errors
 exec { 'html_errors = On':
