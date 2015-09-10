@@ -244,6 +244,22 @@ sudo sed -e 's/^display_errors = Off/display_errors = On/g' -e  's/^display_star
 # non vip sites nginx conf file
 sudo cp /srv/pmc/nginx-sites.conf /etc/nginx/sites-enabled/sites.conf
 
+######################
+# Add GTM info #
+######################
+
+/usr/bin/wp --path=/srv/www/wp --url=bgr.vip.local option update pmc_google_tag_manager_account GTM-KBGHR3
+/usr/bin/wp --path=/srv/www/wp --url=deadline.vip.local option update pmc_google_tag_manager_account GTM-T247L5
+/usr/bin/wp --path=/srv/www/wp --url=events.variety.vip.local option update pmc_google_tag_manager_account GTM-5GQM8J
+/usr/bin/wp --path=/srv/www/wp --url=footwearnews.vip.local option update pmc_google_tag_manager_account GTM-NLZ76S
+/usr/bin/wp --path=/srv/www/wp --url=hollywoodlife.vip.local option update pmc_google_tag_manager_account GTM-PGVQRN
+/usr/bin/wp --path=/srv/www/wp --url=tvline.vip.local option update pmc_google_tag_manager_account GTM-55MB34
+/usr/bin/wp --path=/srv/www/wp --url=variety.vip.local option update pmc_google_tag_manager_account GTM-NWPZPX
+/usr/bin/wp --path=/srv/www/wp --url=variety411.vip.local option update pmc_google_tag_manager_account GTM-MTHVPD
+/usr/bin/wp --path=/srv/www/wp --url=varietylatino.vip.local option update pmc_google_tag_manager_account GTM-5MHDD2
+/usr/bin/wp --path=/srv/www/wp --url=wwd.vip.local option update pmc_google_tag_manager_account GTM-TFFWNS
+/usr/bin/wp --path=/srv/www/wp --url=pmc.vip.local option update pmc_google_tag_manager_account GTM-MR47FC
+
 #######################
 # Non Wordpress Sites #
 #######################
