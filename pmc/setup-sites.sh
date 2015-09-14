@@ -200,19 +200,13 @@ done < ./sites
 # PMC Specific scripts  #
 ##########################
 
-[ -d pmc-setup-sites ] || mkdir pmc-setup-sites
+if [ -d /srv/pmc/pmc-setup-sites/ ]; then
+	pushd /srv/pmc/pmc-setup-sites/ && git pull && popd
+else
+	git clone https://github.com/Penske-Media-Corp/pmc-setup-sites.git /srv/pmc/pmc-setup-sites/
+fi
 
 cd /srv/pmc/pmc-setup-sites/
-
-sudo git init
-
-sudo git add .
-
-sudo git remote rm origin
-
-sudo git remote add origin https://github.com/Penske-Media-Corp/pmc-setup-sites.git
-
-sudo git pull origin master
 
 FILE="pmc-setup-sites.sh"
 if [ -f $FILE ];
