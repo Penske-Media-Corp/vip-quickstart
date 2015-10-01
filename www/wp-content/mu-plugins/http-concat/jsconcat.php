@@ -18,6 +18,16 @@ class WPcom_JS_Concat extends WP_scripts {
 	function __construct( $scripts ) {
 		$this->old_scripts = $scripts;
 
+		// Unset all the object properties except our private copy of the scripts object.
+		// We have to unset everything so that the overload methods talk to $this->old_scripts->whatever
+		// instead of $this->whatever.
+		foreach ( array_keys( get_object_vars( $this ) ) as $key ) {
+			if ( 'old_scripts' === $key ) {
+				continue;
+			}
+			unset( $this->$key );
+		}
+
 		parent::__construct();
 	}
 
@@ -166,6 +176,10 @@ class WPcom_JS_Concat extends WP_scripts {
 
 function js_concat_init() {
 	global $wp_scripts;
+
+	if ( ! ( $wp_scripts instanceof WP_Scripts ) ) {
+		$wp_scripts = new WP_Scripts();
+	}
 
 	$wp_scripts = new WPcom_JS_Concat( $wp_scripts );
 	$wp_scripts->allow_gzip_compression = ALLOW_GZIP_COMPRESSION;
