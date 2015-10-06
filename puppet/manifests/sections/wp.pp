@@ -1,6 +1,5 @@
 $plugins = [
   'log-deprecated-notices',
-  'log-viewer',
   'monster-widget',
   'query-monitor',
   'user-switching',
@@ -24,6 +23,13 @@ $github_plugins = {
 
 include database::settings
 
+# Delete broken plugins
+file { '/srv/www/wp-content/plugins/log-viewer':
+  ensure => 'absent',
+  force  => true,
+  before => Wp::Site['/srv/www/wp'],
+}
+
 # Install WordPress
 wp::site { '/srv/www/wp':
   url             => $quickstart_domain,
@@ -31,7 +37,7 @@ wp::site { '/srv/www/wp':
   admin_user      => 'wordpress',
   admin_password => 'wordpress',
   network         => true,
-  require => [
+  require         => [
     Vcsrepo['/srv/www/wp'],
     Line['path:/srv/www/wp'],
   ]
@@ -94,12 +100,11 @@ vcsrepo { '/srv/www/wp':
   provider => svn,
 }
 
-# cron job to run every hour
+
 cron { '/srv/www/wp':
   command => '/usr/bin/svn up /srv/www/wp > /dev/null 2>&1',
   minute  => '0',
   hour    => '*',
-  user    => 'vagrant',
 }
 
 vcsrepo { '/srv/www/wp-content/themes/vip/plugins':
@@ -108,17 +113,16 @@ vcsrepo { '/srv/www/wp-content/themes/vip/plugins':
   provider => svn,
 }
 
-# cron job to run every hour
+
 cron { '/srv/www/wp-content/themes/vip/plugins':
   command => '/usr/bin/svn up /srv/www/wp-content/themes/vip/plugins > /dev/null 2>&1',
   minute  => '0',
   hour    => '*',
-  user    => 'vagrant',
 }
 
-vcsrepo { '/srv/www/wp-content/themes/pub/twentyfourteen':
+vcsrepo { '/srv/www/wp-content/themes/pub/twentyfifteen':
   ensure   => latest,
-  source   => 'https://wpcom-themes.svn.automattic.com/twentyfourteen',
+  source   => 'https://wpcom-themes.svn.automattic.com/twentyfifteen',
   provider => svn,
 }
 
@@ -126,6 +130,12 @@ vcsrepo { '/srv/www/wp-tests':
   ensure   => latest,
   source   => 'http://develop.svn.wordpress.org/trunk/',
   provider => svn,
+}
+
+cron { '/srv/www/wp-tests':
+  command => '/usr/bin/svn up /srv/www/wp-tests > /dev/null 2>&1',
+  minute  => '0',
+  hour    => '*',
 }
 
 if 'physical' == $::virtual {

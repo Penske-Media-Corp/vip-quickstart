@@ -3,5 +3,6 @@
 
 # Because this really is a working directory, ignore vagrant's files
 /.vagrant
-/www/wp-content-sites
-/tmp
+
+# Enables local modifications
+wp-cli.local.yml
