@@ -28,3 +28,6 @@
 [submodule "puppet/modules/ssh"]
 	path = puppet/modules/ssh
 	url = https://github.com/attachmentgenie/attachmentgenie-ssh.git
+[submodule "pmc-provisioning-scripts-for-vip-quickstart"]
+	path = pmc-provisioning-scripts-for-vip-quickstart
+	url = https://bitbucket.org/penskemediacorp/pmc-provisioning-scripts-for-vip-quickstart
