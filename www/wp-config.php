@@ -56,13 +56,8 @@ if ( ! defined( 'JETPACK_DEV_DEBUG' ) ) {
 }
 
 /* Content Directory */
-if ( !defined( 'WP_CONTENT_DIR' ) ) {
-	define( 'WP_CONTENT_DIR', dirname( __FILE__ ) . '/wp-content' );
-}
-
-if ( !defined( 'WP_CONTENT_URL' ) ) {
-	define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/wp-content' );
-}
+define( 'WP_CONTENT_DIR', dirname( __FILE__ ) . '/wp-content' );
+define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/wp-content' );
 
 define( 'MULTISITE', true );
 define( 'SUNRISE', true );
@@ -79,13 +74,11 @@ if ( ! defined( 'SUBDOMAIN_INSTALL' ) ) {
 }
 
 if ( ! defined( 'WP_DEFAULT_THEME' ) ) {
-
 	define( 'WP_DEFAULT_THEME', 'pub/twentyfifteen' );
 }
 
 define( 'WP_MEMORY_LIMIT', '64M' );
 define( 'WP_MAX_MEMORY_LIMIT', '256M' );
-
 
 /* That's all, stop editing! Happy blogging. */
 

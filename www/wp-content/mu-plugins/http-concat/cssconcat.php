@@ -27,6 +27,7 @@ class WPcom_CSS_Concat extends WP_Styles {
 			}
 			unset( $this->$key );
 		}
+
 		parent::__construct();
 	}
 
@@ -84,7 +85,6 @@ class WPcom_CSS_Concat extends WP_Styles {
 
 			if ( true === $do_concat ) {
 				$media = $obj->args;
-
 				if ( empty( $media ) ) {
 					$media = 'all';
 				}

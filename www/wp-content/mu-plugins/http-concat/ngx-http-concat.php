@@ -11,7 +11,6 @@
  * It will also replace the relative paths in CSS files with absolute paths.
  */
 
-
 require __DIR__ . '/cssmin.php';
 
 /* Config */
@@ -115,7 +114,6 @@ $last_modified = 0;
 $pre_output = '';
 $output = '';
 
-
 $css_minify = new CSSmin();
 
 foreach ( $args as $uri ) {
@@ -203,7 +201,6 @@ foreach ( $args as $uri ) {
 		}
 
 		$buf = $css_minify->run( $buf );
-
 	}
 
 	if ( 'application/x-javascript' == $mime_type )

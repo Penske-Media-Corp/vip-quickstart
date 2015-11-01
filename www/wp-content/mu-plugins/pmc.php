@@ -53,3 +53,29 @@ function jf_cron_request( $cron_request ) {
 	return $cron_request;
 }
 
+/*
+ * This is the common endpoint for oauth redirect for
+ * theme unit test plugin
+ * https://github.com/Penske-Media-Corp/pmc-theme-unit-test
+ * @since 2015-10-12 Archana Mandhare PMCVIP-62
+ * For local - http://vip.local/redirectme/
+ * For QA - http://qa.pmc.com/redirectme/
+ */
+add_action( 'init', function () {
+
+	if ( false !== stripos( $_SERVER['REQUEST_URI'], '/redirectme' ) && ! empty( $_COOKIE['oauth_redirect'] ) ) {
+
+		if ( ! empty( $_GET['code'] ) ) {
+
+			$code           = sanitize_text_field( $_GET[ 'code' ] );
+			$oauth_redirect = sanitize_text_field( $_COOKIE['oauth_redirect'] );
+			$redirect_url   = $oauth_redirect . '&code=' . $code;
+			wp_safe_redirect( $redirect_url );
+			exit;
+
+		}
+	}
+
+} );
+
+//EOF

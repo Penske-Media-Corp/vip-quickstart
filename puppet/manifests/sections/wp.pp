@@ -96,10 +96,9 @@ file { $wp_content_dirs:
 # VCS Checkout
 vcsrepo { '/srv/www/wp':
   ensure   => latest,
-  source   => 'http://core.svn.wordpress.org/trunk/',
+  source   => 'https://core.svn.wordpress.org/trunk/',
   provider => svn,
 }
-
 
 cron { '/srv/www/wp':
   command => '/usr/bin/svn up /srv/www/wp > /dev/null 2>&1',
@@ -112,7 +111,6 @@ vcsrepo { '/srv/www/wp-content/themes/vip/plugins':
   source   => 'https://vip-svn.wordpress.com/plugins/',
   provider => svn,
 }
-
 
 cron { '/srv/www/wp-content/themes/vip/plugins':
   command => '/usr/bin/svn up /srv/www/wp-content/themes/vip/plugins > /dev/null 2>&1',
@@ -128,7 +126,7 @@ vcsrepo { '/srv/www/wp-content/themes/pub/twentyfifteen':
 
 vcsrepo { '/srv/www/wp-tests':
   ensure   => latest,
-  source   => 'http://develop.svn.wordpress.org/trunk/',
+  source   => 'https://develop.svn.wordpress.org/trunk/',
   provider => svn,
 }
 

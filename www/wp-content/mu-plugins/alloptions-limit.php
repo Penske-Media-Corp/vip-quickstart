@@ -8,7 +8,6 @@ function sanity_check_alloptions( $alloptions ) {
 	// Warn should *always* be =< die
 	$alloptions_size_warn  =  750000;
 	$alloptions_size_die   = 1000000; // 1000000 ~ 1MB, too big for memcache
-
 	
 	static $alloptions_size = null; // Avoids repeated cache requests
 	if ( !$alloptions_size )
@@ -17,19 +16,19 @@ function sanity_check_alloptions( $alloptions ) {
 	if ( $alloptions_size > $alloptions_size_die ) {
 		sanity_check_alloptions_die( $alloptions_size, $alloptions );
 	}
-
+	
 	if ( !$alloptions_size ) {
 		$alloptions_size = strlen( serialize( $alloptions ) );
 		wp_cache_add( 'alloptions_size', $alloptions_size, '', 60 );
 		if ( $alloptions_size > $alloptions_size_warn ) {
 			if ( $alloptions_size > $alloptions_size_die )
 				sanity_check_alloptions_die( $alloptions_size, $alloptions );
-
+				
 			// Warn if we haven't died already
 			sanity_check_alloptions_notify( $alloptions_size, $alloptions );
 		}
 	}
-
+	
 	return $alloptions;
 }
 add_filter( 'alloptions', 'sanity_check_alloptions' );
@@ -46,10 +45,8 @@ h1 {
 	font-size: 40px;
 }
 body {
-
 line-height: 1.6em; font-family: Georgia, serif; width: 390px; margin: auto;
 text-align: center;
-
 }
 .message {
 	font-size: 22px;
@@ -64,7 +61,6 @@ fzd();
 </script>
 </head>
 <body>
-
 <h1>Uh Oh!</h1>
 
 <div class="message">
@@ -76,7 +72,6 @@ fzd();
 <p>Hopefully this should be fixed ASAP, so kindly reload in a few minutes and things should be back to normal.</p> 
 
 </div>
-
 </body>
 </html>
 	<?php
@@ -98,6 +93,5 @@ function sanity_check_alloptions_notify( $size, $alloptions, $blocked = false ) 
 		$msg = "Site will be blocked from loading if option sizes get too much bigger.";
 
 	$log = esc_url( $_SERVER['HTTP_HOST'] ) . " - {$wpdb->blogid} options is up to " . number_format( $size ) . ' ' . $msg . ' #vipoptions'; 
-
 	error_log( $log );
 }

@@ -10,4 +10,3 @@ exec { 'configure postfix hostname':
 
 # Mailtuils for sending diagnostic reports
 package { 'mailutils': ensure => installed }
-

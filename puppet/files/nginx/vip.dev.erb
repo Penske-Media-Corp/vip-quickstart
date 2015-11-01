@@ -1,5 +1,4 @@
 # File Managed by Puppet
-
  
 server {
   listen <%= @port %>;
@@ -9,7 +8,7 @@ server {
  
   access_log  <%= scope.lookupvar('nginx::log_dir')%>/<%= @name %>.access.log;
   error_log  <%= scope.lookupvar('nginx::log_dir')%>/<%= @name %>.error.log;
-
+ 
   index index.html index.php;
 
   # Block all requests to hidden files
@@ -22,14 +21,12 @@ server {
     deny all;
   }
 
-
   # Don't try to rewrite static assets
   # Just return 404 if not found
   # The reason is pretty simple: each 404'd asset will try to pass that to WP
   # Spawning a bunch of unwanted requests and making things SLOOOOOOOW
   location ~ \.(png|jpg|css|js)$ {
     try_files $uri return 404;
-
   }
 
   location / {
