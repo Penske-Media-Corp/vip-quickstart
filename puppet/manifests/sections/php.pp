@@ -39,7 +39,7 @@ class {
     ];
 }
 
-php::fpm::pool { 'www': user => 'www-data' }
+php::fpm::conf { 'www': user => 'www-data' }
 
 # Install PHP_CodeSniffer and the WordPress coding standard
 package { 'pear.php.net/PHP_CodeSniffer':
